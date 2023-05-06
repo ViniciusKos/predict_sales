@@ -1,0 +1,150 @@
+---
+title: "R Notebook"
+output: html_notebook
+  html_document:
+    toc: true
+    theme: united
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+# 0.0 SETUP
+
+
+## 0.1 libraries install
+
+```{r}
+install.packages("tidyverse")
+```
+
+## 0.2 libraries import
+
+```{r}
+library(tidyverse)
+```
+
+# 1.0 DATA DESCRIPTION AND CLEANING
+
+## 1.1 Import data
+
+```{r}
+
+df0 <- read.csv("data/sales_train.csv")
+df1 <- data.frame(df0)
+dim(df0)
+head(df0)
+```
+## 1.2 Check and fill nulls
+
+
+```{r}
+colSums(is.na(df1))
+
+```
+
+## 1.3 Check data types
+
+```{r}
+sapply(df1, class)
+```
+
+```{r}
+
+#convert date to date
+
+df1$date_converted = as.Date(df1$date,  format = "%d.%m.%Y")
+head(df1)
+
+```
+
+## 1.4 Check Duplicates
+
+```{r}
+
+sum(duplicated(df1))
+
+```
+
+```{r}
+df1 <- unique(df1)
+```
+
+```{r}
+dim(df1)
+```
+## 1.5 Descriptive Analysis
+
+
+```{r}
+#maximum and minimun date
+
+summary(df1$date_converted)
+
+```
+
+
+```{r}
+# item price distribution
+p <- ggplot(df1, aes(x = item_price)) + geom_histogram(fill = "purple", alpha = 0.5, bins=30) +
+  labs(title = "Histogram of item_price", x = "item_price", y = "Count") +
+  theme_bw()
+p
+```
+There's a big outlier there!
+
+```{r}
+summary(df1$item_price)
+```
+
+```{r}
+
+# Check item price distribution
+
+
+p <- ggplot(df1 %>% filter(item_price < 5000), aes(x = item_price)) + geom_histogram(fill = "purple", alpha = 0.5, bins=30) +
+  labs(title = "Histogram of item_price filtered", x = "item_price", y = "Count") +
+  theme_bw()
+p
+
+```
+The distribution is right-skewed
+
+
+
+```{r}
+
+# Check item sold distribution
+
+p <- ggplot(df1 , aes(x = item_cnt_day)) + geom_histogram(fill = "blue", alpha = 0.5, bins=30) +
+  labs(title = "Histogram of item_price filtered", x = "item_cnt_day
+", y = "Count") +
+  theme_bw()
+p
+
+print( summary(df1$item_cnt_day))
+
+```
+
+The distribution is right-skewed
+
+
+```{r}
+
+p <- ggplot(df1 %>% filter(item_cnt_day<100) , aes(x = item_cnt_day)) + geom_histogram(fill = "blue", alpha = 0.5, bins=30) +
+  labs(title = "Histogram of item_price filtered", x = "item_cnt_day
+", y = "Count") +
+  theme_bw()
+p
+
+print( summary(df1$item_cnt_day))
+
+```
+
